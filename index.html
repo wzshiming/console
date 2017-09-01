@@ -47,7 +47,7 @@
             command = '/bin/bash';
         }
 
-	websocket = new WebSocket("ws://" + window.location.hostname + ":" + window.location.port + window.location.pathname + "exec/" + containerId + ',' + window.btoa(command));
+	websocket = new WebSocket((window.location.protocol.indexOf("https")==0?"wss":"ws")+"://" + window.location.hostname + ":" + window.location.port + window.location.pathname + "exec/" + containerId + ',' + window.btoa(command));
 
         websocket.onopen = function(evt) {
 			term = new Terminal({
