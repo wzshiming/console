@@ -5,7 +5,6 @@ RUN apk --update add socat
 
 ADD main /
 ADD index.html /
-ADD xterm /xterm
 
 COPY entrypoint.sh /entrypoint.sh
 
