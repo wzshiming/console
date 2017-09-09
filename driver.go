@@ -33,9 +33,3 @@ func GetDrivers(name, host string) (Sessions, error) {
 	}
 	return dri(host)
 }
-
-func init() {
-	Register("docker", NewDockerSessions)
-	Register("ssh", NewSshSessions)
-	Register("cmd", NewCmdSessions)
-}

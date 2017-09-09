@@ -1,9 +1,10 @@
-package console
+package session_docker
 
 import (
 	"io"
 
 	"github.com/fsouza/go-dockerclient"
+	"github.com/wzshiming/console"
 	"github.com/wzshiming/ffmt"
 )
 
@@ -13,7 +14,7 @@ type SessionsDocker struct {
 
 var _ = (*SessionsDocker)(nil)
 
-func NewDockerSessions(host string) (Sessions, error) {
+func NewDockerSessions(host string) (console.Sessions, error) {
 
 	cli, err := docker.NewClient(host)
 	if err != nil {
@@ -25,7 +26,7 @@ func NewDockerSessions(host string) (Sessions, error) {
 	}, nil
 }
 
-func (d *SessionsDocker) CreateExec(req *ReqCreateExec) (*RespCreateExec, error) {
+func (d *SessionsDocker) CreateExec(req *console.ReqCreateExec) (*console.RespCreateExec, error) {
 	// 创建连接
 	exec, err := d.cli.CreateExec(docker.CreateExecOptions{
 		AttachStdin:  true,
@@ -43,7 +44,7 @@ func (d *SessionsDocker) CreateExec(req *ReqCreateExec) (*RespCreateExec, error)
 		return nil, err
 	}
 
-	return &RespCreateExec{
+	return &console.RespCreateExec{
 		EId: exec.ID,
 	}, nil
 }
@@ -67,7 +68,7 @@ func (d *SessionsDocker) StartExec(id string, ws io.ReadWriter) error {
 	return nil
 }
 
-func (d *SessionsDocker) ResizeExecTTY(req *ReqResizeExecTTY) error {
+func (d *SessionsDocker) ResizeExecTTY(req *console.ReqResizeExecTTY) error {
 	err := d.cli.ResizeExecTTY(req.EId, req.Height, req.Width)
 	if err != nil {
 		ffmt.Mark(err)

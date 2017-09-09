@@ -1,10 +1,12 @@
-package console
+package session_ssh
 
 import (
 	"fmt"
 	"io"
 	"net/url"
 	"unsafe"
+
+	"github.com/wzshiming/console"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -16,7 +18,7 @@ type SessionsSsh struct {
 
 var _ = (*SessionsSsh)(nil)
 
-func NewSshSessions(host string) (Sessions, error) {
+func NewSshSessions(host string) (console.Sessions, error) {
 	u, err := url.Parse(host)
 	if err != nil {
 		return nil, err
@@ -36,7 +38,7 @@ func NewSshSessions(host string) (Sessions, error) {
 	}, nil
 }
 
-func (d *SessionsSsh) CreateExec(req *ReqCreateExec) (*RespCreateExec, error) {
+func (d *SessionsSsh) CreateExec(req *console.ReqCreateExec) (*console.RespCreateExec, error) {
 	cli, err := d.cli.NewSession()
 	if err != nil {
 		return nil, err
@@ -44,7 +46,7 @@ func (d *SessionsSsh) CreateExec(req *ReqCreateExec) (*RespCreateExec, error) {
 
 	id := fmt.Sprint(unsafe.Pointer(cli))
 	d.sessions[id] = cli
-	return &RespCreateExec{
+	return &console.RespCreateExec{
 		EId: id,
 	}, nil
 }
@@ -80,7 +82,7 @@ func (d *SessionsSsh) StartExec(eid string, ws io.ReadWriter) error {
 	return cli.Wait()
 }
 
-func (d *SessionsSsh) ResizeExecTTY(req *ReqResizeExecTTY) error {
+func (d *SessionsSsh) ResizeExecTTY(req *console.ReqResizeExecTTY) error {
 	cli, ok := d.sessions[req.EId]
 	if !ok {
 		return fmt.Errorf("Can not find eid " + req.EId)
