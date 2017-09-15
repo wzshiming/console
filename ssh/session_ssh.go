@@ -32,6 +32,10 @@ func NewSshSessions(host string) (console.Sessions, error) {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	})
 
+	if err != nil {
+		return nil, err
+	}
+
 	return &SessionsSsh{
 		cli:      cli,
 		sessions: map[string]*ssh.Session{},
