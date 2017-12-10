@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"sync"
 
 	"github.com/gorilla/mux"
@@ -65,6 +66,16 @@ func execRouter() (*mux.Router, error) {
 		if err != nil {
 			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
+		}
+
+		// 设置默认连接驱动
+		if req.Name == "" {
+			u, err := url.Parse(req.Host)
+			if err != nil {
+				rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+				return
+			}
+			req.Name = u.Scheme
 		}
 
 		// 获取驱动
