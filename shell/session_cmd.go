@@ -1,4 +1,4 @@
-package session_cmd
+package session_shell
 
 import (
 	"fmt"

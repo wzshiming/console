@@ -12,8 +12,8 @@ import (
 	"golang.org/x/net/websocket"
 
 	"github.com/wzshiming/console"
-	_ "github.com/wzshiming/console/cmd"
 	_ "github.com/wzshiming/console/docker"
+	_ "github.com/wzshiming/console/shell"
 	_ "github.com/wzshiming/console/ssh"
 )
 
