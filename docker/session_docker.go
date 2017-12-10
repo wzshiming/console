@@ -5,7 +5,7 @@ import (
 
 	"github.com/fsouza/go-dockerclient"
 	"github.com/wzshiming/console"
-	"github.com/wzshiming/ffmt"
+	"gopkg.in/ffmt.v1"
 )
 
 type SessionsDocker struct {
