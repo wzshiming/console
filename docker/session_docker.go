@@ -5,7 +5,6 @@ import (
 
 	"github.com/fsouza/go-dockerclient"
 	"github.com/wzshiming/console"
-	"gopkg.in/ffmt.v1"
 )
 
 type SessionsDocker struct {
@@ -61,7 +60,6 @@ func (d *SessionsDocker) StartExec(id string, ws io.ReadWriter) error {
 	})
 
 	if err != nil {
-		ffmt.Mark(err)
 		return err
 	}
 
@@ -71,7 +69,6 @@ func (d *SessionsDocker) StartExec(id string, ws io.ReadWriter) error {
 func (d *SessionsDocker) ResizeExecTTY(req *console.ReqResizeExecTTY) error {
 	err := d.cli.ResizeExecTTY(req.EId, req.Height, req.Width)
 	if err != nil {
-		ffmt.Mark(err)
 		return err
 	}
 
