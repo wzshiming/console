@@ -24,10 +24,14 @@ func NewSshSessions(host string) (console.Sessions, error) {
 		return nil, err
 	}
 
-	user := u.User
-	pwd, _ := user.Password()
+	pwd := ""
+	user := ""
+	if u.User != nil {
+		user = u.User.Username()
+		pwd, _ = u.User.Password()
+	}
 	cli, err := ssh.Dial("tcp", u.Host, &ssh.ClientConfig{
-		User:            user.Username(),
+		User:            user,
 		Auth:            []ssh.AuthMethod{ssh.Password(pwd)},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	})
@@ -70,7 +74,7 @@ func (d *SessionsSsh) StartExec(eid string, ws io.ReadWriter) error {
 
 	// Request pseudo terminal
 	err := cli.RequestPty("xterm", 40, 80, ssh.TerminalModes{
-		ssh.ECHO:          0,     // disable echoing
+		ssh.ECHO:          1,     // disable echoing
 		ssh.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
 		ssh.TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
 	})
