@@ -9,9 +9,8 @@ import (
 	"sync"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	"github.com/unrolled/render"
-	"golang.org/x/net/websocket"
-
 	"github.com/wzshiming/console"
 	_ "github.com/wzshiming/console/docker"
 	_ "github.com/wzshiming/console/shell"
@@ -54,10 +53,34 @@ type errMsg struct {
 	Msg string `json:"msg,omitempty"`
 }
 
+type wsConn struct {
+	conn *websocket.Conn
+}
+
+func (c *wsConn) Read(p []byte) (n int, err error) {
+	_, rc, err := c.conn.NextReader()
+	if err != nil {
+		return 0, err
+	}
+	return rc.Read(p)
+}
+
+func (c *wsConn) Write(p []byte) (n int, err error) {
+	wc, err := c.conn.NextWriter(websocket.TextMessage)
+	if err != nil {
+		return 0, err
+	}
+	defer wc.Close()
+	return wc.Write(p)
+}
+
 func execRouter() (*mux.Router, error) {
 	// 路由
 	mux0 := mux.NewRouter()
 	rend := render.New()
+	upgrader := websocket.Upgrader{
+		EnableCompression: true,
+	}
 
 	// 创建连接
 	mux0.HandleFunc("/create_exec", func(w http.ResponseWriter, r *http.Request) {
@@ -99,28 +122,42 @@ func execRouter() (*mux.Router, error) {
 	})
 
 	// 开始连接
-	mux0.Handle("/start_exec", websocket.Handler(func(ws *websocket.Conn) {
-		req := ws.Request()
+	mux0.HandleFunc("/start_exec", func(w http.ResponseWriter, r *http.Request) {
 
-		eid := req.FormValue("eid")
+		eid := r.FormValue("eid")
 
 		client := getSession(eid)
 		if client == nil {
-			rend.JSON(ws, http.StatusBadRequest, nil)
+			rend.JSON(w, http.StatusBadRequest, nil)
 			return
 		}
 		defer delSession(eid)
 
-		// 执行连接
-		err := client.StartExec(eid, ws)
-		if err != nil {
-			rend.JSON(ws, http.StatusBadRequest, errMsg{err.Error()})
+		if !websocket.IsWebSocketUpgrade(r) {
+			rend.JSON(w, http.StatusBadRequest, nil)
 			return
 		}
 
-		rend.Data(ws, http.StatusSwitchingProtocols, nil)
+		ws, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+			return
+		}
+		defer ws.Close()
+
+		ws.SetCloseHandler(nil)
+		ws.SetPingHandler(nil)
+
+		// 执行连接
+		err = client.StartExec(eid, &wsConn{ws})
+		if err != nil {
+			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+			return
+		}
+
+		rend.JSON(w, http.StatusSwitchingProtocols, nil)
 		return
-	}))
+	})
 
 	// 窗口大小调整
 	mux0.HandleFunc("/resize_exec_tty", func(w http.ResponseWriter, r *http.Request) {
