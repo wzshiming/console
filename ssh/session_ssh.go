@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"strconv"
 	"unsafe"
 
 	"github.com/wzshiming/console"
-
 	"golang.org/x/crypto/ssh"
 )
 
@@ -52,7 +52,7 @@ func (d *SessionsSsh) CreateExec(req *console.ReqCreateExec) (*console.RespCreat
 		return nil, err
 	}
 
-	id := fmt.Sprint(unsafe.Pointer(cli))
+	id := "0x" + strconv.FormatUint(uint64(uintptr(unsafe.Pointer(cli))), 16)
 	d.sessions[id] = cli
 	return &console.RespCreateExec{
 		EId: id,
