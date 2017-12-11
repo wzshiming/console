@@ -4,33 +4,34 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"strconv"
 	"unsafe"
 
 	"github.com/wzshiming/console"
 )
 
-type SessionsCmd struct {
+type SessionsShell struct {
 	sessions map[string]*exec.Cmd
 }
 
-var _ = (*SessionsCmd)(nil)
+var _ = (*SessionsShell)(nil)
 
-func NewCmdSessions(host string) (console.Sessions, error) {
-	return &SessionsCmd{
+func NewShellSessions(host string) (console.Sessions, error) {
+	return &SessionsShell{
 		sessions: map[string]*exec.Cmd{},
 	}, nil
 }
 
-func (d *SessionsCmd) CreateExec(req *console.ReqCreateExec) (*console.RespCreateExec, error) {
+func (d *SessionsShell) CreateExec(req *console.ReqCreateExec) (*console.RespCreateExec, error) {
 	cli := exec.Command(req.Cmd)
-	id := fmt.Sprint(unsafe.Pointer(cli))
+	id := "0x" + strconv.FormatUint(uint64(uintptr(unsafe.Pointer(cli))), 16)
 	d.sessions[id] = cli
 	return &console.RespCreateExec{
 		EId: id,
 	}, nil
 }
 
-func (d *SessionsCmd) StartExec(eid string, ws io.ReadWriter) error {
+func (d *SessionsShell) StartExec(eid string, ws io.ReadWriter) error {
 	cli, ok := d.sessions[eid]
 	if !ok {
 		return fmt.Errorf("Can not find eid " + eid)
@@ -46,7 +47,7 @@ func (d *SessionsCmd) StartExec(eid string, ws io.ReadWriter) error {
 	return cli.Run()
 }
 
-func (d *SessionsCmd) ResizeExecTTY(req *console.ReqResizeExecTTY) error {
+func (d *SessionsShell) ResizeExecTTY(req *console.ReqResizeExecTTY) error {
 
 	return nil
 }
