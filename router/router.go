@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"encoding/json"
@@ -74,7 +74,7 @@ func (c *wsConn) Write(p []byte) (n int, err error) {
 	return wc.Write(p)
 }
 
-func execRouter() (*mux.Router, error) {
+func ExecRouter() (*mux.Router, error) {
 	// 路由
 	mux0 := mux.NewRouter()
 	rend := render.New()
