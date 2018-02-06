@@ -12,7 +12,11 @@ docker pull wzshiming/web_console
 
 ## Start 
 
+``` bash
+$(go env GOBIN)/web_console
 ```
+or 
+``` bash
 docker run -it --rm -p 8888:8888 wzshiming/web_console
 ```
 
