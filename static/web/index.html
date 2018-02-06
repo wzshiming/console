@@ -1,0 +1,114 @@
+<html>
+
+<head>
+  <title>Web Console</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="renderer" content="webkit">
+
+  <link href="./css/xterm.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 5px;
+      padding: 0;
+      background-color: #000;
+    }
+    
+    #terminal {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="terminal"></div>
+  <script src="./js/xterm.min.js"></script>
+  <script src="./js/fit.min.js"></script>
+  <script src="./js/attach.min.js"></script>
+  <script src="./js/zepto.min.js"></script>
+  <script type="text/javascript">
+    var post = function(url, data, success, error) {
+      $.ajax({
+        type: "POST",
+        url: url,
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(data),
+        dataType: "json",
+        success: success,
+        error: error
+      });
+    }
+
+    // 解析参数
+    var query = function() {
+      var query = location.search.substring(1);
+      var vars = query.split("&");
+      var m = {};
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        m[pair[0]] = pair[1]
+      }
+      return m;
+    }()
+
+    // 开始终端
+    var term = new Terminal({
+      colors: Terminal.colors,
+      theme: "default",
+      convertEol: false,
+      termName: "xterm",
+      geometry: [80, 24],
+      cursorBlink: true,
+      cursorStyle: "block",
+      visualBell: false,
+      popOnBell: false,
+      scrollback: 10000,
+      screenKeys: true,
+      debug: false,
+      cancelEvents: false,
+      disableStdin: false,
+      useFlowControl: false,
+      tabStopWidth: 4
+    });
+
+    // 开始渲染div
+    var terminal = document.getElementById("terminal")
+    term.open(terminal, false)
+
+    // 自适应
+    term.fit()
+    $(window).resize(function() {
+      term.fit()
+    })
+
+    // 接口
+    post("create_exec", query, function(event) {
+      if (!event.eid) {
+        return
+      }
+      var protocol = location.protocol.indexOf("https") == 0 ? "wss" : "ws"
+      var port = location.port ? ":" + location.port : ""
+      var wsurl = protocol + "://" + location.hostname + port + location.pathname + "start_exec?eid=" + event.eid
+      var websocket = new WebSocket(wsurl);
+      term.attach(websocket)
+      term.on("resize", function(size) {
+        post("resize_exec_tty", {
+          eid: event.eid,
+          height: size.rows,
+          width: size.cols,
+        })
+      });
+      term.on("title", function(e) {
+        document.title = e;
+      })
+    }, function(e) {
+      term.writeln(e.responseText)
+    })
+  </script>
+</body>
+
+</html>
