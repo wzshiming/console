@@ -7,6 +7,10 @@ import (
 	"github.com/urfave/negroni"
 	"github.com/wzshiming/console/router"
 	"github.com/wzshiming/console/static"
+
+	_ "github.com/wzshiming/console/docker"
+	_ "github.com/wzshiming/console/shell"
+	_ "github.com/wzshiming/console/ssh"
 )
 
 var port = flag.Int("p", 8888, "Listen port")

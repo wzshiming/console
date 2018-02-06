@@ -12,9 +12,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/unrolled/render"
 	"github.com/wzshiming/console"
-	_ "github.com/wzshiming/console/docker"
-	_ "github.com/wzshiming/console/shell"
-	_ "github.com/wzshiming/console/ssh"
 )
 
 var (
