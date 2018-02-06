@@ -1,4 +1,4 @@
-//go:generate go-bindata -o static_binddata.go -pkg static static/...
+//go:generate go-bindata -o static_binddata.go -pkg static -ignore '^\.' ./web/...
 
 package static
 
@@ -37,7 +37,7 @@ type FileSystem struct {
 
 func NewFileSystem() *FileSystem {
 	return &FileSystem{
-		Dir:  "static",
+		Dir:  "web",
 		Root: "index.html",
 	}
 }
