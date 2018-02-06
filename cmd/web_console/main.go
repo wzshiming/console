@@ -2,14 +2,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
 
 	"github.com/urfave/negroni"
-	static "github.com/wzshiming/console/cmd/web_console/bind_static"
+	"github.com/wzshiming/console/router"
+	"github.com/wzshiming/console/static"
 )
 
-//go:generate go-bindata -o bind_static/static_binddata.go -pkg static static/...
-
-var port = flag.String("addr", "0.0.0.0:8888", "Listen for server")
+var port = flag.Int("p", 8888, "Listen port")
+var ip = flag.String("ip", "0.0.0.0", "Listen ip")
 
 func main() {
 	flag.Parse()
@@ -19,14 +20,14 @@ func main() {
 		negroni.NewLogger(),
 		negroni.NewRecovery(),
 	)
-	// n.Use(negroni.NewStatic(http.Dir("static")))
+
 	n.Use(negroni.NewStatic(static.NewFileSystem()))
 
-	router, err := execRouter()
+	router, err := router.ExecRouter()
 	if err != nil {
 		panic(err)
 	}
 
 	n.UseHandler(router)
-	n.Run(*port)
+	n.Run(fmt.Sprintf("%v:%v", *ip, *port))
 }
