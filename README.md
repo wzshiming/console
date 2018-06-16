@@ -6,7 +6,7 @@
 ## Driver
  - [x] Docker - Docker client
  - [x] SSH - SSH client
- - [ ] Shell - Local shell
+ - [x] Shell - Local shell
 
 ## GUI
  - [x] [Web console](./cmd/web_console/) - Web Shell

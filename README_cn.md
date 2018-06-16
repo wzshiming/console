@@ -6,7 +6,7 @@
 ## 驱动
  - [x] Docker - Docker 客户端
  - [x] SSH - SSH 客户端
- - [ ] Shell - 本地 shell
+ - [x] Shell - 本地 shell
 
 ## GUI
  - [x] [Web console](./cmd/web_console/) - Web Shell
