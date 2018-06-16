@@ -34,8 +34,6 @@ docker run -it --rm -p 8888:8888 wzshiming/web_console
 or  
 > http://localhost:8888/?name=docker&host=/var/run/docker.sock&cid={Container}&cmd={cmd}  
 
-## MIT License
+## License
 
-Copyright © 2017-2018 wzshiming<[https://github.com/wzshiming](https://github.com/wzshiming)>.
-
-MIT is open-sourced software licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Pouch is licensed under the MIT License. See [LICENSE](https://github.com/wzshiming/console/blob/master/LICENSE) for the full license text.
