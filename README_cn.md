@@ -1,7 +1,7 @@
 # Console
 
-- [English](./README.md)
-- [简体中文](./README_cn.md)
+- [English](https://github.com/wzshiming/console/blob/master/README.md)
+- [简体中文](https://github.com/wzshiming/console/blob/master/README_cn.md)
 
 ## 驱动
 - [x] Docker - Docker 客户端
@@ -9,7 +9,7 @@
 - [x] Shell - 本地 shell
 
 ## GUI
-- [x] [Web console](./cmd/web_console/) - Web Shell
+- [x] [Web console](https://github.com/wzshiming/console/blob/master/cmd/web_console/) - Web Shell
 - [ ] PC console - 使用[electron](https://github.com/electron/electron)构建
 - [ ] Config Management - 连接配置管理
 - [ ] Session Management - 多会话管理
