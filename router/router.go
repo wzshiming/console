@@ -10,7 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	"github.com/unrolled/render"
 	"github.com/wzshiming/console"
 )
 
@@ -71,10 +70,21 @@ func (c *wsConn) Write(p []byte) (n int, err error) {
 	return wc.Write(p)
 }
 
+func ResponseJSON(w http.ResponseWriter, status int, v interface{}) error {
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(status)
+	data, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(data)
+	return err
+}
+
 func ExecRouter() *mux.Router {
 	// 路由
 	mux0 := mux.NewRouter()
-	rend := render.New()
 	upgrader := websocket.Upgrader{
 		EnableCompression: true,
 	}
@@ -84,7 +94,7 @@ func ExecRouter() *mux.Router {
 		req := &console.ReqCreateExec{}
 		err := requests(r.Body, &req)
 		if err != nil {
-			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
 		}
 
@@ -92,7 +102,7 @@ func ExecRouter() *mux.Router {
 		if req.Name == "" {
 			u, err := url.Parse(req.Host)
 			if err != nil {
-				rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+				ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 				return
 			}
 			req.Name = u.Scheme
@@ -101,20 +111,20 @@ func ExecRouter() *mux.Router {
 		// 获取驱动
 		sesss, err := console.GetDrivers(req.Name, req.Host)
 		if err != nil {
-			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
 		}
 
 		// 创建连接
 		exec, err := sesss.CreateExec(req)
 		if err != nil {
-			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
 		}
 
 		addSession(exec.EId, sesss)
 
-		rend.JSON(w, http.StatusOK, exec)
+		ResponseJSON(w, http.StatusOK, exec)
 		return
 	})
 
@@ -125,19 +135,19 @@ func ExecRouter() *mux.Router {
 
 		client := getSession(eid)
 		if client == nil {
-			rend.JSON(w, http.StatusBadRequest, nil)
+			ResponseJSON(w, http.StatusBadRequest, nil)
 			return
 		}
 		defer delSession(eid)
 
 		if !websocket.IsWebSocketUpgrade(r) {
-			rend.JSON(w, http.StatusBadRequest, nil)
+			ResponseJSON(w, http.StatusBadRequest, nil)
 			return
 		}
 
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
 		}
 		defer ws.Close()
@@ -148,11 +158,11 @@ func ExecRouter() *mux.Router {
 		// 执行连接
 		err = client.StartExec(eid, &wsConn{ws})
 		if err != nil {
-			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
 		}
 
-		rend.JSON(w, http.StatusSwitchingProtocols, nil)
+		ResponseJSON(w, http.StatusSwitchingProtocols, nil)
 		return
 	})
 
@@ -161,23 +171,23 @@ func ExecRouter() *mux.Router {
 		req := &console.ReqResizeExecTTY{}
 		err := requests(r.Body, &req)
 		if err != nil {
-			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
 		}
 
 		client := getSession(req.EId)
 		if client == nil {
-			rend.JSON(w, http.StatusBadRequest, nil)
+			ResponseJSON(w, http.StatusBadRequest, nil)
 			return
 		}
 
 		err = client.ResizeExecTTY(req)
 		if err != nil {
-			rend.JSON(w, http.StatusBadRequest, errMsg{err.Error()})
+			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
 		}
 
-		rend.JSON(w, http.StatusOK, nil)
+		ResponseJSON(w, http.StatusOK, nil)
 		return
 	})
 
