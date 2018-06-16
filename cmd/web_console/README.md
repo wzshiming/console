@@ -20,6 +20,10 @@ or
 docker run -it --rm -p 8888:8888 wzshiming/web_console
 ```
 
+### Shell  
+
+> http://localhost:8888/?name=shell&cmd={cmd}  
+
 ### SSH  
 
 > http://localhost:8888/?name=ssh&host=ssh://{username}:{password}@{domain}:{port}  
