@@ -71,7 +71,7 @@ func (c *wsConn) Write(p []byte) (n int, err error) {
 	return wc.Write(p)
 }
 
-func ExecRouter() (*mux.Router, error) {
+func ExecRouter() *mux.Router {
 	// 路由
 	mux0 := mux.NewRouter()
 	rend := render.New()
@@ -181,5 +181,5 @@ func ExecRouter() (*mux.Router, error) {
 		return
 	})
 
-	return mux0, nil
+	return mux0
 }

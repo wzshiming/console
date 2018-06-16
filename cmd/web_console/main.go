@@ -7,10 +7,6 @@ import (
 	"github.com/urfave/negroni"
 	"github.com/wzshiming/console/router"
 	"github.com/wzshiming/console/static"
-
-	_ "github.com/wzshiming/console/docker"
-	_ "github.com/wzshiming/console/shell"
-	_ "github.com/wzshiming/console/ssh"
 )
 
 var port = flag.Int("p", 8888, "Listen port")
@@ -26,12 +22,6 @@ func main() {
 	)
 
 	n.Use(negroni.NewStatic(static.NewFileSystem()))
-
-	router, err := router.ExecRouter()
-	if err != nil {
-		panic(err)
-	}
-
-	n.UseHandler(router)
+	n.UseHandler(router.ExecRouter())
 	n.Run(fmt.Sprintf("%v:%v", *ip, *port))
 }
