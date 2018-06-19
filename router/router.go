@@ -82,7 +82,7 @@ func ResponseJSON(w http.ResponseWriter, status int, v interface{}) error {
 	return err
 }
 
-func ExecRouter() *mux.Router {
+func ExecRouter(disable bool, con *console.ReqCreateExec) *mux.Router {
 	// 路由
 	mux0 := mux.NewRouter()
 	upgrader := websocket.Upgrader{
@@ -92,10 +92,13 @@ func ExecRouter() *mux.Router {
 	// 创建连接
 	mux0.HandleFunc("/create_exec", func(w http.ResponseWriter, r *http.Request) {
 		req := &console.ReqCreateExec{}
-		err := requests(r.Body, &req)
-		if err != nil {
-			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
-			return
+		*req = *con
+		if !disable {
+			err := requests(r.Body, &req)
+			if err != nil {
+				ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
+				return
+			}
 		}
 
 		// 设置默认连接驱动
