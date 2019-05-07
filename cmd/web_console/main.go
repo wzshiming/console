@@ -3,9 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
+	"os"
 	"runtime"
 
-	"github.com/urfave/negroni"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	"github.com/wzshiming/console"
 	"github.com/wzshiming/console/router"
 	"github.com/wzshiming/console/static"
@@ -26,21 +29,29 @@ var cmd = flag.String("cmd",
 	"command to execute")
 var disable = flag.Bool("d", false, "Disable url parameters")
 
-func main() {
+func init() {
 	flag.Parse()
+}
 
+func main() {
 	// web
-	n := negroni.New(
-		negroni.NewLogger(),
-		negroni.NewRecovery(),
-	)
+	mux0 := mux.NewRouter()
 
-	n.Use(negroni.NewStatic(static.NewFileSystem()))
-	n.UseHandler(router.ExecRouter(*disable, &console.ReqCreateExec{
+	mux0.PathPrefix("/api").Handler(http.StripPrefix("/api", router.ExecRouter(*disable, &console.ReqCreateExec{
 		Name: *name,
 		Host: *host,
 		CId:  *cid,
 		Cmd:  *cmd,
-	}))
-	n.Run(fmt.Sprintf("%v:%v", *ip, *port))
+	})))
+
+	mux0.PathPrefix("/").Handler(http.FileServer(static.NewFileSystem()))
+
+	mux := handlers.RecoveryHandler()(mux0)
+	mux = handlers.CombinedLoggingHandler(os.Stdout, mux)
+	p := fmt.Sprintf("%v:%v", *ip, *port)
+	fmt.Printf("Open http://%s/swagger/ with your browser.\n", p)
+	err := http.ListenAndServe(p, mux)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
