@@ -86,17 +86,17 @@
     })
 
     // 接口
-    post("create_exec", query, function(event) {
+    post("api/create_exec", query, function(event) {
       if (!event.eid) {
         return
       }
       var protocol = location.protocol.indexOf("https") == 0 ? "wss" : "ws"
       var port = location.port ? ":" + location.port : ""
-      var wsurl = protocol + "://" + location.hostname + port + location.pathname + "start_exec?eid=" + event.eid
+      var wsurl = protocol + "://" + location.hostname + port + location.pathname + "api/start_exec?eid=" + event.eid
       var websocket = new WebSocket(wsurl);
       term.attach(websocket)
       term.on("resize", function(size) {
-        post("resize_exec_tty", {
+        post("api/resize_exec_tty", {
           eid: event.eid,
           height: size.rows,
           width: size.cols,
