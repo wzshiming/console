@@ -1,21 +1,22 @@
 package session_docker
 
 import (
+	"context"
 	"io"
 
-	"github.com/fsouza/go-dockerclient"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/client"
 	"github.com/wzshiming/console"
 )
 
 type SessionsDocker struct {
-	cli *docker.Client
+	cli *client.Client
 }
 
 var _ = (*SessionsDocker)(nil)
 
 func NewDockerSessions(host string) (console.Sessions, error) {
-
-	cli, err := docker.NewClient(host)
+	cli, err := client.NewClient(host, "1.39", nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -27,22 +28,17 @@ func NewDockerSessions(host string) (console.Sessions, error) {
 
 func (d *SessionsDocker) CreateExec(req *console.ReqCreateExec) (*console.RespCreateExec, error) {
 	// 创建连接
-	exec, err := d.cli.CreateExec(docker.CreateExecOptions{
+
+	exec, err := d.cli.ContainerExecCreate(context.Background(), req.CId, types.ExecConfig{
 		AttachStdin:  true,
 		AttachStdout: true,
 		AttachStderr: true,
 		Tty:          true,
-		Env:          nil,
 		Cmd:          []string{req.Cmd},
-		Container:    req.CId,
-		User:         "",
-		Privileged:   true,
 	})
-
 	if err != nil {
 		return nil, err
 	}
-
 	return &console.RespCreateExec{
 		EId: exec.ID,
 	}, nil
@@ -50,27 +46,24 @@ func (d *SessionsDocker) CreateExec(req *console.ReqCreateExec) (*console.RespCr
 
 func (d *SessionsDocker) StartExec(id string, ws io.ReadWriter) error {
 	// 执行连接
-	err := d.cli.StartExec(id, docker.StartExecOptions{
-		InputStream:  ws,
-		OutputStream: ws,
-		ErrorStream:  ws,
-		Detach:       false,
-		Tty:          true,
-		RawTerminal:  true,
+	hr, err := d.cli.ContainerExecAttach(context.Background(), id, types.ExecStartCheck{
+		Detach: false,
+		Tty:    true,
 	})
-
 	if err != nil {
 		return err
 	}
+	defer hr.Close()
+	go io.Copy(ws, hr.Conn)
+	io.Copy(hr.Conn, ws)
 
 	return nil
 }
 
 func (d *SessionsDocker) ResizeExecTTY(req *console.ReqResizeExecTTY) error {
-	err := d.cli.ResizeExecTTY(req.EId, req.Height, req.Width)
-	if err != nil {
-		return err
-	}
-
+	return d.cli.ContainerExecResize(context.Background(), req.EId, types.ResizeOptions{
+		Height: uint(req.Height),
+		Width:  uint(req.Width),
+	})
 	return nil
 }
