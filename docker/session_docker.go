@@ -46,7 +46,7 @@ func (d *SessionsDocker) CreateExec(req *console.ReqCreateExec) (*console.RespCr
 
 func (d *SessionsDocker) StartExec(id string, ws io.ReadWriter) error {
 	// 执行连接
-	hr, err := d.cli.ContainerExecAttach(context.Background(), id, types.ExecStartCheck{
+	hr, err := d.cli.ContainerExecAttach(context.Background(), id, types.ExecConfig{
 		Detach: false,
 		Tty:    true,
 	})

@@ -32,7 +32,7 @@ docker run -it --rm -p 8888:8888 wzshiming/web_console
 
 > http://localhost:8888/?name=docker&host=tcp://localhost:2375&cid={Container}&cmd={cmd}  
 or  
-> http://localhost:8888/?name=docker&host=/var/run/docker.sock&cid={Container}&cmd={cmd}  
+> http://localhost:8888/?name=docker&host=unix:///var/run/docker.sock&cid={Container}&cmd={cmd}  
 
 ## License
 
