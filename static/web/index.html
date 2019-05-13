@@ -94,7 +94,15 @@
       var port = location.port ? ":" + location.port : ""
       var wsurl = protocol + "://" + location.hostname + port + location.pathname + "api/start_exec?eid=" + event.eid
       var websocket = new WebSocket(wsurl);
-      term.attach(websocket)
+
+      term.once("refresh", function(){
+        post("api/resize_exec_tty", {
+          eid: event.eid,
+          height: term.rows,
+          width: term.cols,
+        })
+      });
+
       term.on("resize", function(size) {
         post("api/resize_exec_tty", {
           eid: event.eid,
@@ -102,9 +110,12 @@
           width: size.cols,
         })
       });
+
       term.on("title", function(e) {
         document.title = e;
       })
+
+      term.attach(websocket);
     }, function(e) {
       term.writeln(e.responseText)
     })
