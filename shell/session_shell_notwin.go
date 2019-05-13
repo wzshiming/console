@@ -57,5 +57,12 @@ func (d *SessionsShell) StartExec(eid string, ws io.ReadWriter) error {
 }
 
 func (d *SessionsShell) ResizeExecTTY(req *console.ReqResizeExecTTY) error {
-	return nil
+	cli, ok := d.sessions[req.EId]
+	if !ok {
+		return fmt.Errorf("Can not find eid " + req.EId)
+	}
+	return pty.Setsize(cli, &pty.Winsize{
+		Rows: uint16(req.Height),
+		Cols: uint16(req.Width),
+	})
 }
