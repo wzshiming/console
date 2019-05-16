@@ -29,6 +29,8 @@
   <script src="./js/xterm.min.js"></script>
   <script src="./js/fit.min.js"></script>
   <script src="./js/attach.min.js"></script>
+  <script src="./js/webLinks.min.js"></script>
+  <script src="./js/winptyCompat.min.js"></script>
   <script src="./js/zepto.min.js"></script>
   <script type="text/javascript">
     var post = function(url, data, success, error) {
@@ -53,7 +55,12 @@
         m[pair[0]] = pair[1]
       }
       return m;
-    }()
+    }();
+
+    Terminal.applyAddon(fit);
+    Terminal.applyAddon(attach);
+    Terminal.applyAddon(webLinks);
+    Terminal.applyAddon(winptyCompat);
 
     // 开始终端
     var term = new Terminal({
@@ -79,6 +86,9 @@
     var terminal = document.getElementById("terminal")
     term.open(terminal, false)
 
+    term.webLinksInit();
+    term.winptyCompatInit();
+
     // 自适应
     term.fit()
     $(window).resize(function() {
@@ -95,14 +105,13 @@
       var wsurl = protocol + "://" + location.hostname + port + location.pathname + "api/start_exec?eid=" + event.eid
       var websocket = new WebSocket(wsurl);
 
-      term.once("refresh", function(){
-        post("api/resize_exec_tty", {
-          eid: event.eid,
-          height: term.rows,
-          width: term.cols,
-        })
-      });
-
+      
+      post("api/resize_exec_tty", {
+        eid: event.eid,
+        height: term.rows,
+        width: term.cols,
+      })
+      
       term.on("resize", function(size) {
         post("api/resize_exec_tty", {
           eid: event.eid,

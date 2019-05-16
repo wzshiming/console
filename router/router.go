@@ -53,6 +53,12 @@ type wsConn struct {
 	conn *websocket.Conn
 }
 
+func newWsConn(conn *websocket.Conn) *wsConn {
+	return &wsConn{
+		conn: conn,
+	}
+}
+
 func (c *wsConn) Read(p []byte) (n int, err error) {
 	_, rc, err := c.conn.NextReader()
 	if err != nil {
@@ -62,7 +68,7 @@ func (c *wsConn) Read(p []byte) (n int, err error) {
 }
 
 func (c *wsConn) Write(p []byte) (n int, err error) {
-	wc, err := c.conn.NextWriter(websocket.TextMessage)
+	wc, err := c.conn.NextWriter(websocket.BinaryMessage)
 	if err != nil {
 		return 0, err
 	}
@@ -159,7 +165,7 @@ func ExecRouter(disable bool, con *console.ReqCreateExec) *mux.Router {
 		ws.SetPingHandler(nil)
 
 		// 执行连接
-		err = client.StartExec(eid, &wsConn{ws})
+		err = client.StartExec(eid, newWsConn(ws))
 		if err != nil {
 			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
