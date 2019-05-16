@@ -104,7 +104,10 @@
       var port = location.port ? ":" + location.port : ""
       var wsurl = protocol + "://" + location.hostname + port + location.pathname + "api/start_exec?eid=" + event.eid
       var websocket = new WebSocket(wsurl);
-
+      
+      websocket.onclose = function (e) {
+        term.writeln('Connection is closed: code:' + e.code)
+      }
       
       post("api/resize_exec_tty", {
         eid: event.eid,
