@@ -49,7 +49,7 @@ func main() {
 	mux := handlers.RecoveryHandler()(mux0)
 	mux = handlers.CombinedLoggingHandler(os.Stdout, mux)
 	p := fmt.Sprintf("%v:%v", *ip, *port)
-	fmt.Printf("Open http://%s/swagger/ with your browser.\n", p)
+	fmt.Printf("Open http://%s/ with your browser.\n", p)
 	err := http.ListenAndServe(p, mux)
 	if err != nil {
 		fmt.Println(err)
