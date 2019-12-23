@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"unsafe"
 
+	_ "github.com/wzshiming/winseq"
 	"github.com/kr/pty"
 	"github.com/wzshiming/console"
 )
