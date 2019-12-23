@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"unsafe"
 
-	_ "github.com/wzshiming/winseq"
 	"github.com/kr/pty"
 	"github.com/wzshiming/console"
 )
@@ -19,7 +18,7 @@ type SessionsShell struct {
 	sessions map[string]*os.File
 }
 
-var _ = (*SessionsShell)(nil)
+var _ console.Sessions = (*SessionsShell)(nil)
 
 func NewShellSessions(host string) (console.Sessions, error) {
 	return &SessionsShell{

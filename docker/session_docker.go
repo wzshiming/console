@@ -13,7 +13,7 @@ type SessionsDocker struct {
 	cli *client.Client
 }
 
-var _ = (*SessionsDocker)(nil)
+var _ console.Sessions = (*SessionsDocker)(nil)
 
 func NewDockerSessions(host string) (console.Sessions, error) {
 	cli, err := client.NewClient(host, "1.39", nil, nil)

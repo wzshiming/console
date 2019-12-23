@@ -15,7 +15,7 @@ type SessionsShell struct {
 	sessions map[string]*exec.Cmd
 }
 
-var _ = (*SessionsShell)(nil)
+var _ console.Sessions = (*SessionsShell)(nil)
 
 func NewShellSessions(host string) (console.Sessions, error) {
 	return &SessionsShell{

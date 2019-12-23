@@ -16,7 +16,7 @@ type SessionsSsh struct {
 	sessions map[string]*ssh.Session
 }
 
-var _ = (*SessionsSsh)(nil)
+var _ console.Sessions = (*SessionsSsh)(nil)
 
 func NewSshSessions(host string) (console.Sessions, error) {
 	u, err := url.Parse(host)
