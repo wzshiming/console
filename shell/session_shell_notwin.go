@@ -1,6 +1,6 @@
 // +build !windows
 
-package session_shell
+package shell
 
 import (
 	"fmt"

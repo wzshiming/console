@@ -1,4 +1,4 @@
-package session_docker
+package docker
 
 import (
 	"github.com/wzshiming/console"

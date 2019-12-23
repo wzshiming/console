@@ -1,4 +1,4 @@
-package session_ssh
+package ssh
 
 import (
 	"fmt"

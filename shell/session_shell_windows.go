@@ -1,4 +1,4 @@
-package session_shell
+package shell
 
 import (
 	"bytes"
