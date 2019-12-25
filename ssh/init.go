@@ -5,6 +5,5 @@ import (
 )
 
 func init() {
-	console.Register("ssh",  NewSshSessions)
+	console.Register("ssh", NewSshSessions)
 }
-

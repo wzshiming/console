@@ -5,6 +5,5 @@ import (
 )
 
 func init() {
-	console.Register("docker",  NewDockerSessions)
+	console.Register("docker", NewDockerSessions)
 }
-
