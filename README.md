@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/wzshiming/console.svg?branch=master)](https://travis-ci.org/wzshiming/console)
 [![Go Report Card](https://goreportcard.com/badge/github.com/wzshiming/console)](https://goreportcard.com/report/github.com/wzshiming/console)
 [![GoDoc](https://godoc.org/github.com/wzshiming/console?status.svg)](https://godoc.org/github.com/wzshiming/console)
-[![Docker Automated build](https://img.shields.io/docker/cloud/automated/wzshiming/console.svg)](https://hub.docker.com/r/wzshiming/console)
+[![Docker Automated build](https://img.shields.io/docker/cloud/automated/wzshiming/web_console.svg)](https://hub.docker.com/r/wzshiming/web_console)
 [![GitHub license](https://img.shields.io/github/license/wzshiming/console.svg)](https://github.com/wzshiming/console/blob/master/LICENSE)
 
 - [English](https://github.com/wzshiming/console/blob/master/README.md)
