@@ -10,10 +10,11 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/gorilla/handlers v1.4.0
 	github.com/gorilla/mux v1.7.1
-	github.com/gorilla/websocket v1.4.0
+	github.com/gorilla/websocket v1.4.1
 	github.com/kr/pty v1.1.4
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/wzshiming/go-bindata v4.0.0+incompatible
 	golang.org/x/crypto v0.0.0-20190506204251-e1dfcc566284
 )
