@@ -1,3 +1,4 @@
+//go:build !windows
 // +build !windows
 
 package shell
@@ -10,7 +11,7 @@ import (
 	"strconv"
 	"unsafe"
 
-	"github.com/kr/pty"
+	"github.com/creack/pty"
 	"github.com/wzshiming/console"
 )
 

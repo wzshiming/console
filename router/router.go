@@ -80,12 +80,11 @@ func ResponseJSON(w http.ResponseWriter, status int, v interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 
 	w.WriteHeader(status)
-	data, err := json.Marshal(v)
+	err := json.NewEncoder(w).Encode(v)
 	if err != nil {
 		return err
 	}
-	_, err = w.Write(data)
-	return err
+	return nil
 }
 
 func ExecRouter(disable bool, con *console.ReqCreateExec) *mux.Router {
@@ -170,8 +169,6 @@ func ExecRouter(disable bool, con *console.ReqCreateExec) *mux.Router {
 			ResponseJSON(w, http.StatusBadRequest, errMsg{err.Error()})
 			return
 		}
-
-		ResponseJSON(w, http.StatusSwitchingProtocols, nil)
 		return
 	})
 

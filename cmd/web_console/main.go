@@ -48,10 +48,12 @@ func main() {
 		Cmd:  *cmd,
 	})))
 
-	mux0.PathPrefix("/").Handler(http.FileServer(static.NewFileSystem()))
+	mux0.PathPrefix("/").Handler(http.FileServerFS(static.Web))
 
-	mux := handlers.RecoveryHandler()(mux0)
-	mux = handlers.CombinedLoggingHandler(os.Stdout, mux)
+	var mux http.Handler = mux0
+
+	mux = handlers.RecoveryHandler()(mux)
+	mux = handlers.CombinedLoggingHandler(os.Stderr, mux)
 	p := fmt.Sprintf("%v:%v", *ip, *port)
 	fmt.Printf("Open http://%s/ with your browser.\n", p)
 	err := http.ListenAndServe(p, mux)

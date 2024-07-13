@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/wzshiming/console"
 )
@@ -16,7 +17,9 @@ type SessionsDocker struct {
 var _ console.Sessions = (*SessionsDocker)(nil)
 
 func NewDockerSessions(host string) (console.Sessions, error) {
-	cli, err := client.NewClient(host, "1.39", nil, nil)
+	cli, err := client.NewClientWithOpts(
+		client.WithHost(host),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -45,8 +48,7 @@ func (d *SessionsDocker) CreateExec(req *console.ReqCreateExec) (*console.RespCr
 }
 
 func (d *SessionsDocker) StartExec(id string, ws io.ReadWriter) error {
-	// 执行连接
-	hr, err := d.cli.ContainerExecAttach(context.Background(), id, types.ExecConfig{
+	hr, err := d.cli.ContainerExecAttach(context.Background(), id, container.ExecAttachOptions{
 		Detach: false,
 		Tty:    true,
 	})
@@ -61,9 +63,8 @@ func (d *SessionsDocker) StartExec(id string, ws io.ReadWriter) error {
 }
 
 func (d *SessionsDocker) ResizeExecTTY(req *console.ReqResizeExecTTY) error {
-	return d.cli.ContainerExecResize(context.Background(), req.EId, types.ResizeOptions{
+	return d.cli.ContainerExecResize(context.Background(), req.EId, container.ResizeOptions{
 		Height: uint(req.Height),
 		Width:  uint(req.Width),
 	})
-	return nil
 }
